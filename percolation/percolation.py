@@ -3,7 +3,7 @@ from random import randint
 from statistics import mean, stdev
 
 
-class WeightedQuickUniondouble_virtual_UF:
+class WeightedQuickUnion:
     def __init__(self, n) -> None:
         self.data = [i for i in range(n)]
         self.size = [1 for i in range(n)]
@@ -46,8 +46,8 @@ class Percolation:
         self.VBOTTOM = n**2 + 1
 
         self.number_of_open_sites = 0
-        self.double_virtual_UF = WeightedQuickUniondouble_virtual_UF(self.VBOTTOM + 1)
-        self.single_virtual_UF = WeightedQuickUniondouble_virtual_UF(self.VBOTTOM)
+        self.double_virtual_UF = WeightedQuickUnion(self.VBOTTOM + 1)
+        self.single_virtual_UF = WeightedQuickUnion(self.VBOTTOM)
         self.open_sites = [[False for x in range(n)] for y in range(n)]
 
         for i in range(1, n + 1):
