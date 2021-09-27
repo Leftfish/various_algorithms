@@ -66,9 +66,6 @@ class Board:
         # convert to 2D and return as Board
         return Board(self._make_2d_array(swapped_tiles))
 
-    def is_goal(self) -> bool:
-        return self.manhattan_score == 0
-
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Board):
             return self.tiles == o.tiles
@@ -92,7 +89,8 @@ class Node:
         self.priority = self.manhattan + self.moves
 
     def __repr__(self) -> str:
-        to_string = f'Current board after {self.moves} moves:\n{self.board}\nManhattan: {self.manhattan}\nPriority: {self.priority}\nParent board: {self.previous_node}'
+        to_string = f'Current board after {self.moves} moves:\n{self.board}\n'
+        to_string += 'Manhattan: {self.manhattan}\nPriority: {self.priority}\nParent board: {self.previous_node}'
         return to_string
 
     def __lt__(self, o: object) -> bool:
@@ -105,7 +103,7 @@ class Node:
         return NotImplemented
 
     def is_goal(self) -> bool:
-        return self.board.is_goal()
+        return self.manhattan == 0
 
 
 class Solver:
