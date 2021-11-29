@@ -15,6 +15,7 @@ PIC_RUNNER = '\033[35m' + '@'
 PIC_PATH = '\033[37m' + '*'
 PIC_START = '\033[33m' + 'X'
 PIC_END = '\033[32m' + '$'
+PIC_FLOOR = ' '
 
 ANIMATION_PAUSE = 0.025
 
@@ -53,7 +54,7 @@ class MazeRunner:
         maze_copy[self.end[0]][self.end[1]] = PIC_END
 
         for row in maze_copy:
-            print("".join(map(str, row)).replace("1", PIC_WALL).replace("0", " "))
+            print("".join(map(str, row)).replace("1", PIC_WALL).replace("0", PIC_FLOOR))
 
     def is_way_forward(self) -> bool:
         new_x = self.x + self.direction[0]
@@ -136,7 +137,7 @@ class MazeRunner:
                     os.system("cls") if os.name == "nt" else os.system("clear")
 
 def make_maze(maze: str) -> list:
-    return [list(map(int, line)) for line in maze_solvable.splitlines()]
+    return [list(map(int, line)) for line in maze.splitlines()]
 
 maze_solvable = '''111111111111111111111111111111111111111111111111111111
 101110000000000111111001111111110111111110111000001111
@@ -166,7 +167,7 @@ maze_unsolvable = '''111111111111111111111111111111111111111111111111111111
 101110000110011110111111100000001111011111111110000011
 111111111111111111111111111111111111111111111111111111'''
 
-M = MazeRunner((4,6), make_maze(maze_unsolvable))
+M = MazeRunner((4,7), make_maze(maze_solvable))
 os.system("cls")
 M.print_maze()
 sleep(0.5)
