@@ -2,10 +2,10 @@ import os
 from itertools import cycle
 from time import sleep
 
-UP = ("U", -1, 0)
-LEFT = ("L", 0, -1)
-DOWN = ("D", 1, 0)
-RIGHT = ("R", 0, 1)
+UP = (-1, 0)
+LEFT = (0, -1)
+DOWN = (1, 0)
+RIGHT = (0, 1)
 
 WALL = 1
 END = 9
@@ -16,7 +16,7 @@ PIC_PATH = '\033[37m' + '*'
 PIC_START = '\033[33m' + 'X'
 PIC_END = '\033[32m' + '$'
 
-ANIMATION_PAUSE = 0.05
+ANIMATION_PAUSE = 0.025
 
 
 class MazeRunner:
@@ -24,6 +24,8 @@ class MazeRunner:
         self.directions = cycle([UP, LEFT, DOWN, RIGHT])
         self.direction = next(self.directions)
         self.maze = maze
+        self.maze_width = len(self.maze[0])
+        self.maze_height = len(self.maze)
         self.start = start
         self.x, self.y = start[0], start[1]
 
@@ -54,10 +56,10 @@ class MazeRunner:
             print("".join(map(str, row)).replace("1", PIC_WALL).replace("0", " "))
 
     def is_way_forward(self) -> bool:
-        new_x = self.x + self.direction[1]
-        new_y = self.y + self.direction[2]
+        new_x = self.x + self.direction[0]
+        new_y = self.y + self.direction[1]
 
-        return new_x >= 0 and new_x < len(self.maze) and new_y >= 0 and new_y < len(self.maze[0]) and self.maze[new_x][new_y] != WALL
+        return new_x >= 0 and new_x < self.maze_height and new_y >= 0 and new_y < self.maze_width and self.maze[new_x][new_y] != WALL
 
     def turn_left(self) -> None:
         self.direction = next(self.directions)
@@ -67,22 +69,22 @@ class MazeRunner:
             self.direction = next(self.directions)
 
     def step(self) -> None:
-        self.x += self.direction[1]
-        self.y += self.direction[2]
+        self.x += self.direction[0]
+        self.y += self.direction[1]
         self.path.append((self.x, self.y))
 
     def is_hand_on_right_wall(self) -> bool:
-        if self.direction[0] == 'U':
-            return self.y + 1 < len(self.maze[0]) and self.maze[self.x][self.y+1] == WALL
+        if self.direction == UP:
+            return self.y + 1 < self.maze_width and self.maze[self.x][self.y+1] == WALL
 
-        elif self.direction[0] == 'D':
+        elif self.direction == DOWN:
             return self.y - 1 >= 0 and self.maze[self.x][self.y-1] == WALL
 
-        elif self.direction[0] == 'L':
+        elif self.direction == LEFT:
             return self.x - 1 >= 0 and self.maze[self.x-1][self.y] == WALL
 
-        elif self.direction[0] == 'R':
-            return self.x + 1 < len(self.maze) and self.maze[self.x+1][self.y] == WALL
+        elif self.direction == RIGHT:
+            return self.x + 1 < self.maze_height and self.maze[self.x+1][self.y] == WALL
 
         return False
 
@@ -90,7 +92,7 @@ class MazeRunner:
         return self.maze[self.x][self.y] == END
 
     def is_any_wall_around(self) -> bool:
-        if self.y + 1 < len(self.maze[0]) and self.maze[self.x][self.y+1] == WALL:
+        if self.y + 1 < self.maze_width and self.maze[self.x][self.y+1] == WALL:
             return True
 
         elif self.y - 1 >= 0 and self.maze[self.x][self.y-1] == WALL:
@@ -99,7 +101,7 @@ class MazeRunner:
         elif self.x - 1 >= 0 and self.maze[self.x-1][self.y] == WALL:
             return True
 
-        elif self.x + 1 < len(self.maze) and self.maze[self.x+1][self.y] == WALL:
+        elif self.x + 1 < self.maze_height and self.maze[self.x+1][self.y] == WALL:
             return True
 
         return False
@@ -139,8 +141,8 @@ def make_maze(maze: str) -> list:
 maze_solvable = '''111111111111111111111111111111111111111111111111111111
 101110000000000111111001111111110111111110111000001111
 101111101111011111100000001111110111101110111011011111
-101101101100011111101101100000000111101110111011011011
-101101101111011111101101101111011111100000000011011011
+101100000100011111101101100000000111101110111011011011
+101100000111011111101101101111011111100000000011011011
 101000000011011110101111001111011111101111111111011009
 101101110111011110111110001111000001101110111111011011
 101101110111011110111100011111011011101111111111011011
@@ -164,5 +166,8 @@ maze_unsolvable = '''111111111111111111111111111111111111111111111111111111
 101110000110011110111111100000001111011111111110000011
 111111111111111111111111111111111111111111111111111111'''
 
-M = MazeRunner((1,1), make_maze(maze_solvable))
+M = MazeRunner((4,6), make_maze(maze_unsolvable))
+os.system("cls")
+M.print_maze()
+sleep(0.5)
 M.run_maze()
